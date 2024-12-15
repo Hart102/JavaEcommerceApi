@@ -26,7 +26,7 @@ public class CartItemController {
 //                cartId = cartService.initializeNewCart();
 //            }
             cartItemService.addItemToCart(cartId, productId, quantity);
-            return ResponseEntity.ok(new ApiResponse("Add item success", null));
+            return ResponseEntity.ok(new ApiResponse("Item added to cart", null));
         } catch (ApplicationException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
@@ -37,7 +37,7 @@ public class CartItemController {
                                                           @PathVariable Long productId) {
         try {
             cartItemService.removeItemFromCart(cartId, productId);
-            return ResponseEntity.ok(new ApiResponse("Item removed", null));
+            return ResponseEntity.ok(new ApiResponse("Item removed from cart", null));
         } catch (ApplicationException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }

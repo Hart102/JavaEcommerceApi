@@ -56,9 +56,15 @@ public class CartItemService implements ICartItemService {
         // 6. Set the total price
         cartItem.setTotoalPrice();
 
-        // 7. Save the cart and cart item
+        //7. Set cart total amount
+        BigDecimal totalAmount = cart.getCartItems()
+                .stream()
+                .map(CartItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        cart.setTotalAmount(totalAmount);
+
+        // 8. Save the cart and cart item
         cartItemRepository.save(cartItem);
-        cart.setTotalAmount(cartItem.getTotalPrice());
         cartRepository.save(cart);
     }
 
@@ -68,6 +74,7 @@ public class CartItemService implements ICartItemService {
         Cart cart = cartService.getCart(cartId);
         CartItem itemToRemove = getCartItem(cartId, productId);
         cart.removeItem(itemToRemove);
+        cart.setTotalAmount(BigDecimal.ZERO);
         cartRepository.save(cart);
     }
 
@@ -83,7 +90,11 @@ public class CartItemService implements ICartItemService {
                     item.setUnitPrice(item.getProduct().getPrice());
                     item.setTotoalPrice();
                 });
-        BigDecimal totalAmount = cart.getTotalAmount();
+        BigDecimal totalAmount = cart.getCartItems()
+                .stream()
+                .map(CartItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         cart.setTotalAmount(totalAmount);
         cartRepository.save(cart);
     }
