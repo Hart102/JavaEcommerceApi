@@ -16,8 +16,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -54,9 +53,9 @@ public class ProductController {
     public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product) {
         try{
             Product newProduct = productService.addProduct(product);
-            return ResponseEntity.ok(new ApiResponse("Add product success", newProduct));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+            return ResponseEntity.ok(new ApiResponse("product added successfully", newProduct));
+        } catch (ApplicationException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
@@ -65,7 +64,7 @@ public class ProductController {
         try {
             Product product = productService.updateProduct(request, productId);
             ProductDto productDto = productService.convertToDto(product);
-            return ResponseEntity.ok(new ApiResponse("Update success", productDto));
+            return ResponseEntity.ok(new ApiResponse("Update successful", productDto));
         } catch (ApplicationException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }

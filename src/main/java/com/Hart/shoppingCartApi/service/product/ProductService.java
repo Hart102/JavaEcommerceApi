@@ -36,6 +36,10 @@ public class ProductService implements IProductService {
         // If No, Save it as a new category
         // Then set the new category as the new product category
 
+        if  (productExists(request.getName(), request.getBrand())) {
+            throw new ApplicationException(request.getBrand()+ " " + request.getName() + " already exist" + " you may update this product instead");
+        }
+
         Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
                 .orElseGet(() -> {
                     Category newCategory = new Category(request.getCategory().getName());
@@ -43,6 +47,11 @@ public class ProductService implements IProductService {
                 });
         request.setCategory(category);
         return productRepository.save(createProduct(request, category));
+    }
+
+    // Check if product already exists
+    private boolean productExists(String name, String brand) {
+        return productRepository.existsByNameAndBrand(name, brand);
     }
 
     private Product createProduct(AddProductRequest request, Category category) {
@@ -54,8 +63,6 @@ public class ProductService implements IProductService {
                 request.getDescription(),
                 category
         );
-//        newProduct.setCategory(category);
-//        return newProduct;
     }
 
     @Override

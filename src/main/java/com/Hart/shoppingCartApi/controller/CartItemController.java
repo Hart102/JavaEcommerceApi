@@ -1,9 +1,12 @@
 package com.Hart.shoppingCartApi.controller;
 
 import com.Hart.shoppingCartApi.exception.ApplicationException;
+import com.Hart.shoppingCartApi.model.Cart;
+import com.Hart.shoppingCartApi.model.User;
 import com.Hart.shoppingCartApi.response.ApiResponse;
 import com.Hart.shoppingCartApi.service.cart.ICartItemService;
 import com.Hart.shoppingCartApi.service.cart.ICartService;
+import com.Hart.shoppingCartApi.service.user.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +18,17 @@ import org.springframework.web.bind.annotation.*;
 public class CartItemController {
     private final ICartItemService cartItemService;
     private final ICartService cartService;
+    private final IUserService userService;
 
     @PostMapping("/item/add")
-    public ResponseEntity<ApiResponse> addItemToCart(@RequestParam Long cartId,
-                                                     @RequestParam Long productId,
+    public ResponseEntity<ApiResponse> addItemToCart(@RequestParam Long productId,
                                                      @RequestParam Integer quantity) {
 
         try {
-//            if(cartId == null) {
-//                cartId = cartService.initializeNewCart();
-//            }
-            cartItemService.addItemToCart(cartId, productId, quantity);
+            User user = userService.getUserById(1L);
+            Cart cart = cartService.initializeNewCart(user);
+
+            cartItemService.addItemToCart(cart.getId(), productId, quantity);
             return ResponseEntity.ok(new ApiResponse("Item added to cart", null));
         } catch (ApplicationException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

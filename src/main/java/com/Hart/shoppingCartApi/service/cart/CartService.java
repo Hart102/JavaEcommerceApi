@@ -2,6 +2,7 @@ package com.Hart.shoppingCartApi.service.cart;
 
 import com.Hart.shoppingCartApi.exception.ApplicationException;
 import com.Hart.shoppingCartApi.model.Cart;
+import com.Hart.shoppingCartApi.model.User;
 import com.Hart.shoppingCartApi.repository.CartItemRepository;
 import com.Hart.shoppingCartApi.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -32,6 +34,8 @@ public class CartService implements ICartService{
     @Override
     public void clearCart(Long id) {
         Cart cart = getCart(id);
+        cart.setTotalAmount(BigDecimal.ZERO);
+        cartRepository.save(cart);
         cartItemRepository.deleteAllByCartId(id);
         cart.getCartItems().clear();
         cartRepository.deleteById(id);
@@ -44,12 +48,17 @@ public class CartService implements ICartService{
     }
 
     @Override
-    public Long initializeNewCart() {
-//        Cart newCart = new Cart();
-//        Long newCartId = cartIdGenerator.incrementAndGet();
-//        newCart.setId(newCartId);
-//
-//        return cartRepository.save(newCart).getId();
-        return 123456789L;
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId()))
+                .orElseGet(() -> {
+                    Cart cart = new Cart();
+                    cart.setUser(user);
+                    return cartRepository.save(cart);
+                });
+    }
+
+    @Override
+    public Cart getCartByUserId(Long userId) {
+        return cartRepository.findByUserId(userId);
     }
 }
