@@ -28,7 +28,9 @@ public class Cart {
     @JoinColumn(name = "user_id")
     private User user;
 
-
+    public Long getCartId() {
+        return id;
+    }
 
     public void addItem(CartItem cartItem) {
         this.cartItems.add(cartItem);
