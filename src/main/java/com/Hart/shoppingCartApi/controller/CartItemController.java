@@ -7,10 +7,13 @@ import com.Hart.shoppingCartApi.response.ApiResponse;
 import com.Hart.shoppingCartApi.service.cart.ICartItemService;
 import com.Hart.shoppingCartApi.service.cart.ICartService;
 import com.Hart.shoppingCartApi.service.user.IUserService;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import static org.ietf.jgss.GSSException.UNAUTHORIZED;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,13 +28,15 @@ public class CartItemController {
                                                      @RequestParam Integer quantity) {
 
         try {
-            User user = userService.getUserById(1L);
+            User user = userService.getAuthenticatedUser(); // Get the LoggedIn user
             Cart cart = cartService.initializeNewCart(user);
 
             cartItemService.addItemToCart(cart.getId(), productId, quantity);
             return ResponseEntity.ok(new ApiResponse("Item added to cart", null));
         } catch (ApplicationException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (JwtException e) {
+            return ResponseEntity.status(UNAUTHORIZED).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
