@@ -42,3 +42,4 @@ It includes features for user authentication, product management, cart managemen
 - **Maven** for dependency management
 - **MySQL** database server
 
+#
