@@ -42,9 +42,3 @@ It includes features for user authentication, product management, cart managemen
 - **Maven** for dependency management
 - **MySQL** database server
 
-### Setup Instructions
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/your-repository/ecommerce-application.git
-   cd ecommerce-application
