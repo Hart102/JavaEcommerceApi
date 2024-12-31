@@ -11,16 +11,20 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
 @Component
 public class JwtUtils {
 
-    // Injecting data from application.properties file
-    @Value("${auth.token.jwtSecret")
-    private static String jwtSecret;
+    // Generate secrete key
+    private static java.util.Base64 Base64;
+    private static final String jwtSecret = java.util.Base64.getEncoder()
+            .encodeToString(new SecureRandom().generateSeed(32));
 
+    // Injecting data from application.properties file
     @Value("${auth.token.expirationInMils}")
     private int expirationTime;
 
@@ -42,6 +46,9 @@ public class JwtUtils {
     }
 
     private static Key key() {
+        if (jwtSecret == null || jwtSecret.isEmpty()) {
+            throw new IllegalArgumentException("JWT secret key is not configured properly.");
+        }
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 

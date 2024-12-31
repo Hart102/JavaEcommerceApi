@@ -32,7 +32,7 @@ public class DataInitializer implements ApplicationListener<ApplicationReadyEven
     }
 
     private void createDefaultUserIfNotExists() {
-        Role userRole = roleRepository.findByName("ROLE_ADMIN")
+        Role userRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("Role ROLE_ADMIN not found"));
 
         for (int i = 1; i <= 3; i++) {

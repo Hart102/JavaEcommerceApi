@@ -2,6 +2,7 @@ package com.Hart.shoppingCartApi.security.config;
 
 import com.Hart.shoppingCartApi.security.jwt.AuthTokenFilter;
 import com.Hart.shoppingCartApi.security.jwt.JwtAuthEntryPoint;
+import com.Hart.shoppingCartApi.security.jwt.JwtUtils;
 import com.Hart.shoppingCartApi.security.user.ShopUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,6 +30,8 @@ import java.util.List;
 public class ShopConfig {
     private final ShopUserDetailsService userDetailsService;
     private final JwtAuthEntryPoint authEntryPoint;
+    private final JwtUtils jwtUtils;
+
 
     private static final List<String> SECURED_URLS =
             List.of("/api/v1/carts/**", "/api/v1/cartItems/**"); //Securing all the cart endpoints
@@ -46,7 +49,7 @@ public class ShopConfig {
 
     @Bean
     public AuthTokenFilter authTokenFilter() {
-        return new AuthTokenFilter();
+        return new AuthTokenFilter(jwtUtils, userDetailsService);
     }
 
     @Bean
